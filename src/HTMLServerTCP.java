@@ -7,7 +7,7 @@ public class HTMLServerTCP {
     public static void main(String[] args) throws Exception {
 
         InetAddress ipv4 =
-                InetAddress.getByName("0.0.0.0");
+                InetAddress.getByName("127.0.0.1");
 
         ServerSocket serverSocket =
                 new ServerSocket();
@@ -45,7 +45,7 @@ public class HTMLServerTCP {
             // Read HTML file
             byte[] body =
                     Files.readAllBytes(
-                            Paths.get("index.html")
+                            Paths.get("src/index.html")
                     );
 
             OutputStream output =
