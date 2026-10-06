@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Java TCP Server</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+
+            background:
+                    radial-gradient(circle at top left, #2563eb 0%, transparent 35%),
+                    radial-gradient(circle at bottom right, #7c3aed 0%, transparent 35%),
+                    #080c18;
+
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            overflow: hidden;
+        }
+
+        .background-grid {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+
+            background-image:
+                    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+
+            background-size: 40px 40px;
+
+            z-index: -1;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 950px;
+
+            padding: 50px;
+
+            background: rgba(255, 255, 255, 0.08);
+
+            border: 1px solid rgba(255, 255, 255, 0.15);
+
+            border-radius: 24px;
+
+            backdrop-filter: blur(15px);
+
+            box-shadow:
+                    0 25px 60px rgba(0,0,0,0.45);
+
+            text-align: center;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+
+            padding: 8px 16px;
+
+            border-radius: 30px;
+
+            background: rgba(34, 197, 94, 0.15);
+
+            color: #86efac;
+
+            margin-bottom: 25px;
+
+            font-size: 14px;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+
+            background: #22c55e;
+
+            border-radius: 50%;
+
+            box-shadow: 0 0 10px #22c55e;
+
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 15px;
+
+            background: linear-gradient(
+                    90deg,
+                    #60a5fa,
+                    #a78bfa,
+                    #f472b6
+            );
+
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            color: #cbd5e1;
+
+            font-size: 18px;
+
+            max-width: 700px;
+
+            margin: auto;
+
+            line-height: 1.6;
+        }
+
+        .flow {
+            display: flex;
+
+            justify-content: center;
+            align-items: center;
+
+            gap: 18px;
+
+            margin: 45px 0;
+
+            flex-wrap: wrap;
+        }
+
+        .node {
+            padding: 20px 28px;
+
+            background: rgba(255,255,255,0.08);
+
+            border: 1px solid rgba(255,255,255,0.12);
+
+            border-radius: 14px;
+
+            min-width: 150px;
+
+            transition: 0.3s;
+        }
+
+        .node:hover {
+            transform: translateY(-7px);
+
+            background: rgba(255,255,255,0.13);
+        }
+
+        .node-title {
+            font-size: 18px;
+            font-weight: bold;
+
+            margin-bottom: 6px;
+        }
+
+        .node-subtitle {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .arrow {
+            font-size: 28px;
+            color: #60a5fa;
+        }
+
+        .cards {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(180px, 1fr));
+
+            gap: 15px;
+
+            margin-top: 30px;
+        }
+
+        .card {
+            padding: 20px;
+
+            background: rgba(0,0,0,0.25);
+
+            border-radius: 14px;
+
+            border: 1px solid rgba(255,255,255,0.08);
+
+            text-align: left;
+        }
+
+        .card span {
+            display: block;
+
+            color: #64748b;
+
+            font-size: 12px;
+
+            text-transform: uppercase;
+
+            margin-bottom: 5px;
+        }
+
+        .card strong {
+            font-size: 17px;
+        }
+
+        button {
+            margin-top: 35px;
+
+            padding: 14px 28px;
+
+            border: none;
+
+            border-radius: 30px;
+
+            font-size: 15px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            background: linear-gradient(
+                    90deg,
+                    #3b82f6,
+                    #8b5cf6
+            );
+
+            color: white;
+
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.07);
+
+            box-shadow:
+                    0 10px 30px rgba(59,130,246,0.4);
+        }
+
+        #message {
+            margin-top: 20px;
+
+            min-height: 25px;
+
+            color: #86efac;
+
+            font-family: monospace;
+        }
+
+        .footer {
+            margin-top: 35px;
+
+            font-size: 12px;
+
+            color: #64748b;
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="background-grid"></div>
+
+<div class="container">
+
+    <div class="status">
+
+        <div class="status-dot"></div>
+
+        TCP SERVER ONLINE
+
+    </div>
+
+
+    <h1>
+        Hello from Java TCP
+    </h1>
+
+
+    <p class="subtitle">
+
+        This page was delivered directly from a raw
+        Java ServerSocket.
+
+        No Spring Boot.
+        No Tomcat.
+        No web framework.
+
+        Just TCP, HTTP and Java.
+
+    </p>
+
+
+    <div class="flow">
+
+        <div class="node">
+
+            <div class="node-title">
+                Browser
+            </div>
+
+            <div class="node-subtitle">
+                HTTP Client
+            </div>
+
+        </div>
+
+
+        <div class="arrow">
+            →
+        </div>
+
+
+        <div class="node">
+
+            <div class="node-title">
+                TCP
+            </div>
+
+            <div class="node-subtitle">
+                Port 8080
+            </div>
+
+        </div>
+
+
+        <div class="arrow">
+            →
+        </div>
+
+
+        <div class="node">
+
+            <div class="node-title">
+                Java
+            </div>
+
+            <div class="node-subtitle">
+                ServerSocket
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="cards">
+
+        <div class="card">
+
+            <span>Transport</span>
+
+            <strong>TCP</strong>
+
+        </div>
+
+
+        <div class="card">
+
+            <span>Protocol</span>
+
+            <strong>HTTP/1.1</strong>
+
+        </div>
+
+
+        <div class="card">
+
+            <span>Port</span>
+
+            <strong>8080</strong>
+
+        </div>
+
+
+        <div class="card">
+
+            <span>Status</span>
+
+            <strong>200 OK</strong>
+
+        </div>
+
+    </div>
+
+
+    <button onclick="showMessage()">
+        Test JavaScript
+    </button>
+
+
+    <div id="message"></div>
+
+
+    <div class="footer">
+
+        Served using Java ServerSocket • Raw HTTP Response
+
+    </div>
+
+</div>
+
+
+<script>
+
+    function showMessage() {
+
+        const message =
+            document.getElementById("message");
+
+        message.innerHTML =
+            "✓ JavaScript executed successfully in the browser!";
+    }
+
+</script>
+
+</body>
+
+</html>

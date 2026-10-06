@@ -48,7 +48,7 @@ public class SimpleHttpServerTcp {
                     clientSocket.getOutputStream()
             );
 
-            String body = "Hello from your Love. I love you. You are perfect. We will achieve everything together!";
+            String body = "Hello TCP Server";
 
             writer.println("HTTP/1.1 200 OK");
             writer.println("Content-Type: text/plain");
