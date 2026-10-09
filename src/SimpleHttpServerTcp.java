@@ -9,7 +9,7 @@ public class SimpleHttpServerTcp {
         ServerSocket serverSocket = new ServerSocket();
 
         // 2.1 Bind the TCP Socket to an IPv4 Address
-        InetAddress ipv4 = InetAddress.getByName("0.0.0.0");
+        InetAddress ipv4 = InetAddress.getByName("192.168.2.11");
         serverSocket.bind(new InetSocketAddress(ipv4, 8080));
 
         // 2.2 Bind TCP Socket to an IPv6 Address
@@ -17,8 +17,9 @@ public class SimpleHttpServerTcp {
 //        serverSocket.bind(new InetSocketAddress(ipv6, 8080));
 
 
-        System.out.println("IPv4 UDP socket is listening on:");
-        System.out.println("http:/"+ ipv4.getHostAddress() + "8080");
+        System.out.println("IPv4 TCP socket is listening on:");
+//        System.out.println("http:/"+ ipv4.getHostAddress() + "8080");
+        System.out.println("http:/"+ serverSocket.getLocalSocketAddress());
         //System.out.println("http:/"+ ipv6.getHostAddress() + "8080");
         System.out.println();
 

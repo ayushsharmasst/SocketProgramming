@@ -8,7 +8,7 @@ public class SimpleHttpServerUdp {
         DatagramSocket udpSocket = new DatagramSocket(null);
 
         // 2.1 Bind TCP Socket to an IPv4 Address
-        InetAddress ipv4 = InetAddress.getByName("127.0.0.1");
+        InetAddress ipv4 = InetAddress.getByName("192.168.2.11");
         udpSocket.bind(new InetSocketAddress(ipv4, 8080));
 
         // 2.2 Bind UDP Socket to an IPv6 Address
